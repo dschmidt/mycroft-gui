@@ -29,7 +29,7 @@
 #include <QJsonDocument>
 #include <QQmlContext>
 #include <QQmlEngine>
-
+#include <QDebug>
 
 AbstractSkillView::AbstractSkillView(QQuickItem *parent)
     : QQuickItem(parent),
@@ -306,7 +306,7 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
 
         //we already checked, assume *map is valid
         SessionDataMap *map = sessionDataForSkill(skillId);
-         QVariantMap::const_iterator i;
+        QVariantMap::const_iterator i;
         for (i = data.constBegin(); i != data.constEnd(); ++i) {
             //insert it as a model
             QList<QVariantMap> list = variantListToOrderedMap(i.value().value<QVariantList>());
@@ -383,6 +383,7 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
             return;
         }
 
+        m_activeSkillsModel->removeAllDelegatesForSkill(skillId);
         QList <AbstractDelegate *> delegates;
         for (const auto &delegateUrl : delegateUrls) {
             AbstractDelegate *delegate = m_activeSkillsModel->delegateForSkill(skillId, delegateUrl);
@@ -390,6 +391,8 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
             if (delegate) {
                 continue;
             } else {
+                qDebug() << "Adding page: " << delegateUrl;
+
                 QQmlEngine *engine = qmlEngine(this);
                 QQmlContext *context = QQmlEngine::contextForObject(this);
                 //This class should be *ALWAYS* created from QML
@@ -449,6 +452,8 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
         }
 
         m_activeSkillsModel->insertSkills(position, skillList);
+        qDebug() << "session.list.insert";
+        m_activeSkillsModel->dump();
 
 
     // Active skill removed
@@ -479,6 +484,8 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
             }
         }
         m_activeSkillsModel->removeRows(position, itemsNumber);
+        qDebug() << "session.list.remove starting @" << position << " for " << itemsNumber;
+        m_activeSkillsModel->dump();
 
     // Active skill moved
     } else if (type == QLatin1String("mycroft.session.list.move") && doc[QStringLiteral("namespace")].toString() == QLatin1String("mycroft.system.active_skills")) {
@@ -499,6 +506,8 @@ void AbstractSkillView::onGuiSocketMessageReceived(const QString &message)
             return;
         }
         m_activeSkillsModel->moveRows(QModelIndex(), from, itemsNumber, QModelIndex(), to);
+        qDebug() << "session.list.move";
+        m_activeSkillsModel->dump();
 //END ACTIVESKILLS
 
 //TODO: manage nested models?

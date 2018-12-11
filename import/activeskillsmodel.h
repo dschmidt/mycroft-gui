@@ -51,6 +51,11 @@ public:
     AbstractDelegate *delegateForSkill(const QString &skillId, const QUrl &qmlUrl) const;
 
     /**
+     * @returns true if deleted, false if skillId not found in list
+     */
+    bool removeAllDelegatesForSkill(const QString &skillId);
+    
+    /**
      * Adds to the bookeeping a new delegate corresponding to a given skill
      */
     void insertDelegates(QList<AbstractDelegate *>delegates);
@@ -61,6 +66,7 @@ public:
      *                  If is an empty string all delegates will be returned.
      */
     QList<AbstractDelegate *> delegatesForSkill(const QString &skillId);
+    void dump() const;
 
 //REIMPLEMENTED
     bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;

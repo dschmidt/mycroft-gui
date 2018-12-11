@@ -81,6 +81,19 @@ AbstractDelegate *ActiveSkillsModel::delegateForSkill(const QString &skillId, co
     return model->delegateForUrl(qmlUrl);
 }
 
+bool ActiveSkillsModel::removeAllDelegatesForSkill(const QString &skillId)
+{
+    DelegatesModel *model = m_delegatesModels.value(skillId);
+    if (!model) {
+        return false;
+    }
+
+    //model->deleteLater();
+    //m_delegatesModels.remove(skillId);
+    model->clear();
+    return true;
+}
+
 void ActiveSkillsModel::insertDelegates(QList<AbstractDelegate *> delegates)
 {
     if (delegates.isEmpty()) {
@@ -159,6 +172,7 @@ bool ActiveSkillsModel::moveRows(const QModelIndex &sourceParent, int sourceRow,
 bool ActiveSkillsModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     if (row < 0 || count <= 0 || row + count > m_skills.count() || parent.isValid()) {
+        qDebug() << "Invalid index/count in removeRows()" << row << "-" << count << " of " << m_skills.count();
         return false;
     }
 
@@ -210,3 +224,9 @@ QHash<int, QByteArray> ActiveSkillsModel::roleNames() const
     };
 }
 
+void ActiveSkillsModel::dump() const
+{
+    qDebug() << "ActiveSkillsModel: cnt=" << m_skills.count();
+    for (int i=0; i < m_skills.count(); i++)
+        qDebug() << "   " << m_skills[i];
+}

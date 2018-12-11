@@ -128,10 +128,16 @@ void MycroftController::onMainSocketMessageReceived(const QString &message)
     }
 
     //filter out the noise so we can print debug stuff later without drowning in noise
-    if (type.startsWith(QStringLiteral("enclosure")) || type.startsWith(QStringLiteral("mycroft-date"))) {
-        return;
+    if (!type.startsWith(QStringLiteral("enclosure."))
+        && !type.startsWith(QStringLiteral("mycroft-"))  // ignore mycroft-reminder, mycroft-configureation, etc.
+        && !type.contains(QStringLiteral("viseme"))
+        && !type.contains(QStringLiteral("mouth.icon"))
+       )
+    {
+        qDebug() << "Msg Type: " << type << "     data: " << message.toUtf8();
+                 // doc[QStringLiteral("data")].toString();
     }
-    qDebug() << "type" << type;
+
 
     emit intentRecevied(type, doc[QStringLiteral("data")].toVariant().toMap());
 
