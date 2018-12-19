@@ -44,6 +44,8 @@ Mycroft.AbstractDelegate {
 
     readonly property bool userInteracting: main ?main.pressed : false
 
+    property string bgColor: "black"
+    property double bgOpacity: 0.4
     //To do some automatic responsive layouting
     readonly property bool wideMode: width > Kirigami.Units.gridUnit * 18
 
@@ -56,7 +58,7 @@ Mycroft.AbstractDelegate {
     //so the implementation can do background.image: "foo" background.dim: 0.6 etc as grouped properties
     background: Rectangle {
         //TODO: api for having skills that just fill a solid color
-        color: "black"
-        opacity: 0.4
+        color: parent.bgColor
+        opacity: parent.bgOpacity
     }
 }
